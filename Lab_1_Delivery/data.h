@@ -23,11 +23,12 @@ public:
 };
 
 class Client {
-public:
+private:
     int id;
     std::string name;
     long long phone;
 
+public:
     Client(int i = 0, std::string n = "Гость", long long p = 0) : id(i), name(n), phone(p) {}
 
     int getId() const { return id; }
@@ -40,25 +41,24 @@ public:
 };
 
 class Courier {
-public:
+private:
     int id;
     std::string name;
+    bool busy;
     long long phone;
-    bool Busy;
 
-    Courier(int i = 0, std::string n = "", bool b = false)
-        : id(i), name(n), Busy(b) {
-    }
+public:
+    Courier(int i = 0, std::string n = "Курьер", bool b = false, long long p = 0): id(i), name(n), busy(b), phone(p) {}
 
     int getId() const { return id; }
     std::string getName() const { return name; }
     long long getPhone() const { return phone; }
-    bool getBusy() const { return Busy; }
+    bool getBusy() const { return busy; }
 
-    void setBusy(bool busy) { Busy = busy; }
+    void setBusy(bool busy) { busy = busy; }
 
     void print() const {
-        std::cout << "Курьер №" << id << " : " << name << " | Свободен: " << (Busy ? "-" : "+") << "\n";
+        std::cout << "Курьер №" << id << " : " << name << " | Свободен: " << (busy ? "-" : "+") << "\n";
     }
 
 };
