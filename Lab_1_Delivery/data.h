@@ -55,7 +55,7 @@ public:
     long long getPhone() const { return phone; }
     bool getBusy() const { return busy; }
 
-    void setBusy(bool busy) { busy = busy; }
+    void setBusy(bool b) { busy = b; }
 
     void print() const {
         std::cout << "Курьер №" << id << " : " << name << " | Свободен: " << (busy ? "-" : "+") << "\n";
