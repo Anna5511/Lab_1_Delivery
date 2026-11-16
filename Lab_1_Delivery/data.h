@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 // товар
 class Product {
@@ -18,7 +19,7 @@ public:
     double getPrice() const { return price; }
 
     void print() const {
-        std::cout << "Продукт: " << name << " | Цена: " << price <<" | Количество в магазине: " << amount <<"\n";
+        std::cout << std::setw(30) << "Продукт: " << name << std::setw(30) << " | Цена: " << price << std::setw(30) << " | Количество в магазине: " << amount <<"\n";
     }
 };
 

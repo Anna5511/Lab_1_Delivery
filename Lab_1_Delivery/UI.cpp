@@ -6,7 +6,7 @@
 UI::UI(ServiceManager& s) : service(s), nextClientId(1) {}
 
 void UI::printMenu() const {
-    std::cout << "\n===== ÌÅÍÞ ÑËÓÆÁÛ ÄÎÑÒÀÂÊÈ =====\n";
+    std::cout << "\n--------- ÌÅÍÞ ÑËÓÆÁÛ ÄÎÑÒÀÂÊÈ --------- \n";
     std::cout << "1) Ñîçäàòü çàêàç è äîáàâèòü ïîçèöèè\n";
     std::cout << "2) Ïîêàçàòü ñïèñîê çàêàçîâ\n";
     std::cout << "3) Âûáðàòü ñïîñîá äîñòàâêè äëÿ çàêàçà\n";

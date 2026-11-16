@@ -133,7 +133,6 @@
     <ClInclude Include="data.h" />
     <ClInclude Include="Delivery.h" />
     <ClInclude Include="File_Saver.h" />
-    <ClInclude Include="Service.h" />
     <ClInclude Include="Service_Manager.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>

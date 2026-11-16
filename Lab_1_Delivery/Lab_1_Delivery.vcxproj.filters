@@ -35,9 +35,6 @@
     <ClInclude Include="Delivery.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Service.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="data.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
