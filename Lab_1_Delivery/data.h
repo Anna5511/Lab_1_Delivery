@@ -19,7 +19,10 @@ public:
     double getPrice() const { return price; }
 
     void print() const {
-        std::cout << std::setw(30) << "Продукт: " << name << std::setw(30) << " | Цена: " << price << std::setw(30) << " | Количество в магазине: " << amount <<"\n";
+        std::cout << std::left
+            << std::setw(30) << ("Продукт: " + name)
+            << std::setw(10) << (" | Цена: " + std::to_string((int)price) + " руб.")
+            << " | Количество в магазине: " << amount << "\n";
     }
 };
 

@@ -56,6 +56,18 @@ public:
         else if (status == OrderStatus::In_progress) status = OrderStatus::Delivered;
     }
 
+    bool canChangeStatus() const {
+        // Если статус уже "Доставлен" — менять некуда
+        if (status == OrderStatus::Delivered) return false;
+
+        // Если доставка требует курьера — курьер должен быть назначен
+        if (delivery->requiresCourier() && courierId == -1) {
+            return false;
+        }
+
+        return true;
+    }
+
     double getTotalCost() const {
         double sum = 0;
         for (size_t i = 0; i < items.size(); i++)

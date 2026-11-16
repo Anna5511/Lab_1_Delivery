@@ -22,11 +22,46 @@ void ServiceManager::addItemToOrder(int orderId, Product product) {
     for (size_t i = 0; i < activeOrders.size(); i++) {
         if (activeOrders[i].getId() == orderId) {
             if (!activeOrders[i].canAddItems()) {
-                std::cout << "Ошибка: в этот заказ уже нельзя добавлять позиции (статус изменён).\n";
+                std::cout << "Ошибка: в этот заказ уже нельзя добавлять позиции.\n";
                 return;
             }
+
+            // Проверяем, хватает ли товара в каталоге
+            bool enoughStock = false;
+            for (size_t k = 0; k < catalog.size(); k++) {
+                if (catalog[k].getName() == product.getName()) {
+                    if (catalog[k].getQuantity() >= product.getQuantity()) {
+                        enoughStock = true;
+                    }
+                    break;
+                }
+            }
+
+            if (!enoughStock) {
+                std::cout << "Ошибка: Недостаточно товара \"" << product.getName()
+                    << "\" в магазине!\n";
+                return;
+            }
+
+            // Добавляем товар в заказ
             activeOrders[i].addItem(product);
-            std::cout << "Товар \"" << product.getName() << "\" добавлен в заказ №" << orderId << "\n";
+
+            // Уменьшаем количество в каталоге
+            for (size_t k = 0; k < catalog.size(); k++) {
+                if (catalog[k].getName() == product.getName()) {
+                    // Создаём новый Product с уменьшенным количеством
+                    Product updated(catalog[k].getName(),
+                        catalog[k].getPrice(),
+                        catalog[k].getQuantity() - product.getQuantity());
+                    catalog[k] = updated;
+                    std::cout << "Товар \"" << product.getName()
+                        << "\" (" << product.getQuantity() << " шт) добавлен в заказ №"
+                        << orderId << ". Осталось в магазине: "
+                        << catalog[k].getQuantity() << " шт.\n";
+                    return;
+                }
+            }
+
             return;
         }
     }
@@ -86,6 +121,18 @@ void ServiceManager::assignCourier(int orderId, int courierId) {
 void ServiceManager::advanceOrderStatus(int orderId) {
     for (size_t i = 0; i < activeOrders.size(); i++) {
         if (activeOrders[i].getId() == orderId) {
+            // Проверяем, можно ли менять статус
+            if (!activeOrders[i].canChangeStatus()) {
+                if (activeOrders[i].getDelivery().requiresCourier() &&
+                    activeOrders[i].getCourierId() == -1) {
+                    std::cout << "Ошибка: Нельзя изменить статус — курьер не назначен!\n";
+                }
+                else {
+                    std::cout << "Ошибка: Заказ уже доставлен, статус нельзя изменить.\n";
+                }
+                return;
+            }
+
             activeOrders[i].changeStatus();
 
             if (activeOrders[i].getStatus() == OrderStatus::Delivered) {
