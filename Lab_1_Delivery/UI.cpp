@@ -48,13 +48,14 @@ std::string UI::readString(const std::string& prompt) const {
 
 void UI::flowCreateOrder() {
     std::cout << "\n--- Создание заказа ---\n";
+
+    // Сначала собираем данные клиента
     std::string name = readString("Имя клиента: ");
     long long phone = readPhone("Телефон клиента: ");
     int type = readInt("Способ доставки (1 - стандарт, 2 - экспресс, 3 - самовывоз): ", 1, 3);
 
-    Client client(nextClientId++, name, phone);
-    int orderId = service.createOrder(client, type);
-    if (orderId == 0) return;
+    // Теперь собираем товары во временный список
+    std::vector<Product> selectedItems;
 
     while (true) {
         std::cout << "\nКаталог товаров:\n";
@@ -65,7 +66,22 @@ void UI::flowCreateOrder() {
 
         const Product& p = service.getCatalog()[idx - 1];
         int qty = readInt("Количество: ", 1, p.getQuantity());
-        service.addItemToOrder(orderId, Product(p.getName(), p.getPrice(), qty));
+        selectedItems.push_back(Product(p.getName(), p.getPrice(), qty));
+    }
+
+    // Если пользователь не выбрал ни одного товара — отменяем создание заказа
+    if (selectedItems.empty()) {
+        std::cout << "\nЗаказ не создан: вы не добавили ни одного товара.\n";
+        return;
+    }
+
+    // Только теперь создаём заказ и добавляем в него товары
+    Client client(nextClientId++, name, phone);
+    int orderId = service.createOrder(client, type);
+    if (orderId == 0) return;
+
+    for (size_t i = 0; i < selectedItems.size(); i++) {
+        service.addItemToOrder(orderId, selectedItems[i]);
     }
 
     std::cout << "\nЗаказ сформирован. Текущая информация:\n";
