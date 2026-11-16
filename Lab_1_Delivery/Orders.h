@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <memory>
 #include "data.h"
 #include "Delivery.h"
 
@@ -11,63 +12,73 @@ enum class OrderStatus {
     Delivered
 };
 
+inline std::string statusToString(OrderStatus s) {
+    switch (s) {
+    case OrderStatus::Created:     return "Создан";
+    case OrderStatus::In_progress: return "В пути";
+    case OrderStatus::Delivered:   return "Доставлен";
+    }
+    return "Неизвестно";
+}
+
 class Order {
 private:
     int id;
     Client client;
     std::vector<Product> items;
-    Delivery delivery;
+    std::unique_ptr<Delivery> delivery; // полиморфный компонент
     int courierId;
     OrderStatus status;
 
 public:
-    Order(int i, Client c, Delivery d) : id(i), client(c), delivery(d), courierId(-1), status(OrderStatus::Created) {}
+    Order(int i, Client c, std::unique_ptr<Delivery> d)
+        : id(i), client(c), delivery(std::move(d)), courierId(-1), status(OrderStatus::Created) {
+    }
 
     int getId() const { return id; }
     Client getClient() const { return client; }
-    Delivery getDelivery() const { return delivery; }
+    const Delivery& getDelivery() const { return *delivery; }
     int getCourierId() const { return courierId; }
     OrderStatus getStatus() const { return status; }
+    const std::vector<Product>& getItems() const { return items; }
 
-    void addItem(Product p) {
-        items.push_back(p);
-    }
+    // проверка допустимости операции (инкапсуляция)
+    bool canAddItems() const { return status == OrderStatus::Created; }
 
-    void setCourier(int cId) {
-        courierId = cId;
-    }
+    void addItem(Product p) { items.push_back(p); }
+
+    void setCourier(int cId) { courierId = cId; }
+
+    void setDelivery(std::unique_ptr<Delivery> d) { delivery = std::move(d); }
 
     void changeStatus() {
         if (status == OrderStatus::Created) status = OrderStatus::In_progress;
         else if (status == OrderStatus::In_progress) status = OrderStatus::Delivered;
     }
 
-    double getTotalCost() {
+    double getTotalCost() const {
         double sum = 0;
-        for (int i = 0; i < items.size(); i++) {
+        for (size_t i = 0; i < items.size(); i++)
             sum += items[i].getPrice() * items[i].getQuantity();
-        }
-        return delivery.calculateCost(sum);
+        return delivery->calculateCost(sum); // полиморфный вызов, без if-цепочек
     }
 
-    void print() {
+    void print() const {
         std::cout << "Заказ №" << id << " | Клиент: " << client.getName() << "\n";
-        std::cout << "Доставка: " << delivery.getName() << " | Цена: " << getTotalCost() << " руб.\n";
+        std::cout << "Доставка: " << delivery->getName()
+            << " | Цена: " << getTotalCost() << " руб."
+            << " | Срок: " << delivery->getEstimatedTime() << "\n";
 
         std::cout << "Товары: ";
-        for (int i = 0; i < items.size(); i++) {
+        for (size_t i = 0; i < items.size(); i++)
             std::cout << items[i].getName() << "(" << items[i].getQuantity() << "шт) ";
-        }
         std::cout << "\n";
 
         std::cout << "Курьер: ";
         if (courierId == -1) std::cout << "Не назначен\n";
         else std::cout << "ID " << courierId << "\n";
 
-        std::cout << "Статус заказа: ";
-        if (status == OrderStatus::Created) std::cout << "Создан\n";
-        else if (status == OrderStatus::In_progress) std::cout << "В пути\n";
-        else std::cout << "Доставлен\n";
+        std::cout << "Статус заказа: " << statusToString(status) << "\n";
         std::cout << "------------------------\n";
     }
 };

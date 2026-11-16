@@ -7,33 +7,64 @@ ServiceManager::ServiceManager() : nextOrderId(1) {}
 void ServiceManager::addCourier(Courier c) { couriers.push_back(c); }
 void ServiceManager::addProductToCatalog(Product p) { catalog.push_back(p); }
 
-void ServiceManager::createOrder(Client client, int deliveryType) {
-    Delivery d(deliveryType);
-    Order newOrder(nextOrderId, client, d);
-    activeOrders.push_back(newOrder);
+int ServiceManager::createOrder(Client client, int deliveryType) {
+    auto d = createDelivery(deliveryType);
+    if (!d) {
+        std::cout << "Ошибка: неверный тип доставки.\n";
+        return 0;
+    }
+    activeOrders.push_back(Order(nextOrderId, client, std::move(d)));
     std::cout << "Успех! Создан заказ №" << nextOrderId << "\n";
-    nextOrderId++;
+    return nextOrderId++;
 }
 
 void ServiceManager::addItemToOrder(int orderId, Product product) {
-    for (int i = 0; i < activeOrders.size(); i++) {
+    for (size_t i = 0; i < activeOrders.size(); i++) {
         if (activeOrders[i].getId() == orderId) {
+            if (!activeOrders[i].canAddItems()) {
+                std::cout << "Ошибка: в этот заказ уже нельзя добавлять позиции (статус изменён).\n";
+                return;
+            }
             activeOrders[i].addItem(product);
-            std::cout << "Товар добавлен в заказ №" << orderId << "\n";
+            std::cout << "Товар \"" << product.getName() << "\" добавлен в заказ №" << orderId << "\n";
             return;
         }
     }
     std::cout << "Ошибка: Заказ с таким ID не найден.\n";
 }
 
-void ServiceManager::assignCourier(int orderId, int courierId) {
-    for (int i = 0; i < activeOrders.size(); i++) {
+void ServiceManager::setDeliveryMethod(int orderId, int deliveryType) {
+    for (size_t i = 0; i < activeOrders.size(); i++) {
         if (activeOrders[i].getId() == orderId) {
+            if (activeOrders[i].getStatus() != OrderStatus::Created) {
+                std::cout << "Ошибка: способ доставки можно менять только у заказа в статусе «Создан».\n";
+                return;
+            }
+            auto d = createDelivery(deliveryType);
+            if (!d) { std::cout << "Ошибка: неверный тип доставки.\n"; return; }
+
+            activeOrders[i].setDelivery(std::move(d));
+            std::cout << "Способ доставки для заказа №" << orderId << " установлен.\n";
+            std::cout << "Итоговая стоимость: " << activeOrders[i].getTotalCost()
+                << " руб. | Срок: " << activeOrders[i].getDelivery().getEstimatedTime() << "\n";
+            return;
+        }
+    }
+    std::cout << "Ошибка: Заказ не найден.\n";
+}
+
+void ServiceManager::assignCourier(int orderId, int courierId) {
+    for (size_t i = 0; i < activeOrders.size(); i++) {
+        if (activeOrders[i].getId() == orderId) {
+            if (activeOrders[i].getStatus() != OrderStatus::Created) {
+                std::cout << "Ошибка: курьера можно назначать только заказу в статусе «Создан».\n";
+                return;
+            }
             if (!activeOrders[i].getDelivery().requiresCourier()) {
                 std::cout << "Ошибка: Для самовывоза курьер не требуется!\n";
                 return;
             }
-            for (int j = 0; j < couriers.size(); j++) {
+            for (size_t j = 0; j < couriers.size(); j++) {
                 if (couriers[j].getId() == courierId) {
                     if (couriers[j].getBusy()) {
                         std::cout << "Ошибка: Курьер уже занят.\n";
@@ -53,27 +84,25 @@ void ServiceManager::assignCourier(int orderId, int courierId) {
 }
 
 void ServiceManager::advanceOrderStatus(int orderId) {
-    for (int i = 0; i < activeOrders.size(); i++) {
+    for (size_t i = 0; i < activeOrders.size(); i++) {
         if (activeOrders[i].getId() == orderId) {
             activeOrders[i].changeStatus();
 
             if (activeOrders[i].getStatus() == OrderStatus::Delivered) {
                 std::cout << "Заказ №" << orderId << " доставлен!\n";
 
-                // Освобождаем курьера
                 int cid = activeOrders[i].getCourierId();
                 if (cid != -1) {
-                    for (int j = 0; j < couriers.size(); j++) {
+                    for (size_t j = 0; j < couriers.size(); j++)
                         if (couriers[j].getId() == cid) couriers[j].setBusy(false);
-                    }
                 }
-                // ТУТ ПОЗЖЕ БУДЕТ СОХРАНЕНИЕ В ФАЙЛ
-                // FileSaver::appendCompletedOrder(activeOrders[i], "completed_orders.txt");
 
+                FileSaver::appendCompletedOrder(activeOrders[i], "completed_orders.txt");
                 activeOrders.erase(activeOrders.begin() + i);
             }
             else {
-                std::cout << "Статус заказа №" << orderId << " обновлен.\n";
+                std::cout << "Статус заказа №" << orderId << " обновлен: "
+                    << statusToString(activeOrders[i].getStatus()) << ".\n";
             }
             return;
         }
@@ -86,17 +115,17 @@ void ServiceManager::showAllOrders() const {
         std::cout << "Активных заказов нет.\n";
         return;
     }
-    for (int i = 0; i < activeOrders.size(); i++) {
+    for (size_t i = 0; i < activeOrders.size(); i++)
         activeOrders[i].print();
-    }
 }
 
 void ServiceManager::showAllCouriers() const {
-    for (int i = 0; i < couriers.size(); i++) couriers[i].print();
+    for (size_t i = 0; i < couriers.size(); i++)
+        couriers[i].print();
 }
 
 void ServiceManager::showCatalog() const {
-    for (int i = 0; i < catalog.size(); i++) {
+    for (size_t i = 0; i < catalog.size(); i++) {
         std::cout << i + 1 << ". ";
         catalog[i].print();
     }
