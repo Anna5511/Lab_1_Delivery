@@ -2,17 +2,13 @@
 #include <string>
 #include <memory>
 
-// Абстрактный контракт способа доставки
 class Delivery {
 public:
     virtual ~Delivery() = default;
-
     virtual std::string getName() const = 0;
     virtual double calculateCost(double baseCost) const = 0;
     virtual std::string getEstimatedTime() const = 0;
     virtual bool requiresCourier() const = 0;
-
-    // нужен, чтобы заказ можно было скопировать/сохранить при желании
     virtual std::unique_ptr<Delivery> clone() const = 0;
 };
 
@@ -38,7 +34,7 @@ class PickupDelivery : public Delivery {
 public:
     std::string getName() const override { return "Самовывоз"; }
     double calculateCost(double baseCost) const override { return baseCost; }
-    std::string getEstimatedTime() const override { return "готово через 30 минут"; }
+    std::string getEstimatedTime() const override { return "Самовывоз"; } // Как просили
     bool requiresCourier() const override { return false; }
     std::unique_ptr<Delivery> clone() const override { return std::make_unique<PickupDelivery>(*this); }
 };
@@ -48,6 +44,6 @@ inline std::unique_ptr<Delivery> createDelivery(int type) {
     case 1: return std::make_unique<StandardDelivery>();
     case 2: return std::make_unique<ExpressDelivery>();
     case 3: return std::make_unique<PickupDelivery>();
-    default: return nullptr; // некорректный ввод — обработает вызывающий код
+    default: return nullptr;
     }
 }

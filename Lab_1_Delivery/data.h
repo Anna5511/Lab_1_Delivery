@@ -10,18 +10,20 @@ private:
     int amount;
 
 public:
-    Product(std::string n = "", double p = 0.0, int q = 1): name(n), price(p), amount(q) {
-    }
+    Product(std::string n = "", double p = 0.0, int q = 1) : name(n), price(p), amount(q) {}
 
     std::string getName() const { return name; }
     int getQuantity() const { return amount; }
     double getPrice() const { return price; }
 
+    // Исправление бага: меняем количество существующего объекта, а не пересоздаем его
+    void changeQuantity(int delta) { amount += delta; }
+
     void print() const {
         std::cout << std::left
             << std::setw(30) << ("Продукт: " + name)
-            << std::setw(15) << (" | Цена: " + std::to_string((int)price) + " руб.")
-            << " | Количество в магазине: " << amount << "\n";
+            << std::setw(15) << (" | Цена: " + std::to_string((int)price) + " р.")
+            << " | На полке: " << amount << " шт.\n";
     }
 };
 
@@ -29,14 +31,14 @@ class Client {
 private:
     int id;
     std::string name;
-    long long phone;
+    std::string phone; // Изменено на string для надежной валидации ввода
 
 public:
-    Client(int i = 0, std::string n = "Гость", long long p = 0) : id(i), name(n), phone(p) {}
+    Client(int i = 0, std::string n = "Гость", std::string p = "0000000000") : id(i), name(n), phone(p) {}
 
     int getId() const { return id; }
     std::string getName() const { return name; }
-    long long getPhone() const { return phone; }
+    std::string getPhone() const { return phone; }
 
     void print() const {
         std::cout << "Клиент №" << id << ": " << name << " | Телефон: " << phone << "\n";
@@ -48,20 +50,22 @@ private:
     int id;
     std::string name;
     bool busy;
-    long long phone;
+    std::string phone;
 
 public:
-    Courier(int i = 0, std::string n = "Курьер", bool b = false, long long p = 0): id(i), name(n), busy(b), phone(p) {}
+    Courier(int i = 0, std::string n = "Курьер", bool b = false, std::string p = "0000000000")
+        : id(i), name(n), busy(b), phone(p) {
+    }
 
     int getId() const { return id; }
     std::string getName() const { return name; }
-    long long getPhone() const { return phone; }
+    std::string getPhone() const { return phone; }
     bool getBusy() const { return busy; }
 
     void setBusy(bool b) { busy = b; }
 
     void print() const {
-        std::cout << "Курьер №" << id << " : " << name << " | Свободен: " << (busy ? "-" : "+") << "\n";
+        std::cout << "Курьер №" << id << " : " << std::left << std::setw(15) << name
+            << " | Свободен: " << (busy ? "-" : "+") << "\n";
     }
-
 };
