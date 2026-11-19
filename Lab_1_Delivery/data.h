@@ -3,7 +3,6 @@
 #include <iostream>
 #include <iomanip>
 
-// товар
 class Product {
 private:
     std::string name;
@@ -21,7 +20,7 @@ public:
     void print() const {
         std::cout << std::left
             << std::setw(30) << ("Продукт: " + name)
-            << std::setw(10) << (" | Цена: " + std::to_string((int)price) + " руб.")
+            << std::setw(15) << (" | Цена: " + std::to_string((int)price) + " руб.")
             << " | Количество в магазине: " << amount << "\n";
     }
 };

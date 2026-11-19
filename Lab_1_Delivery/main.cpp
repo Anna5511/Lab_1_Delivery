@@ -9,16 +9,20 @@ int main() {
     std::setlocale(LC_ALL, "Russian");
 
     // Каталог
-    service.addProductToCatalog(Product("Пицца Маргарита", 450, 20));
-    service.addProductToCatalog(Product("Бургер", 350, 15));
-    service.addProductToCatalog(Product("Кола 0.5", 100, 50));
-    service.addProductToCatalog(Product("Картошка фри", 150, 30));
-    service.addProductToCatalog(Product("Чизкейк", 250, 10));
+    // название цена количество
+    service.addProductToCatalog(Product("Хлеб 300г", 100, 15));
+    service.addProductToCatalog(Product("Молоко 930 мл", 92, 15));
+    service.addProductToCatalog(Product("Яйца куриные 10 шт", 150, 50));
+    service.addProductToCatalog(Product("Шоколад Milka 80г", 130, 20));
+    service.addProductToCatalog(Product("Сигареты", 200, 20));
+    service.addProductToCatalog(Product("Водка 750 мл", 160, 10));
 
     // Курьеры
-    service.addCourier(Courier(1, "Иван", false, 89001112233));
-    service.addCourier(Courier(2, "Мария", false, 89002223344));
-    service.addCourier(Courier(3, "Алексей", false, 89003334455));
+    service.addCourier(Courier(1, "Саша", false, 89201112233));
+    service.addCourier(Courier(2, "Таня", false, 89211112233));
+    service.addCourier(Courier(3, "Виталий", false, 89221112233));
+    service.addCourier(Courier(4, "Василий", false, 89231112233));
+    service.addCourier(Courier(5, "Тайлер", false, 89231112233));
 
     UI ui(service);
     ui.run();

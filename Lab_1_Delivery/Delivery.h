@@ -20,7 +20,7 @@ class StandardDelivery : public Delivery {
 public:
     std::string getName() const override { return "Стандартная доставка"; }
     double calculateCost(double baseCost) const override { return baseCost + 200.0; }
-    std::string getEstimatedTime() const override { return "2 - 4 часа"; }
+    std::string getEstimatedTime() const override { return "1 - 4 часа"; }
     bool requiresCourier() const override { return true; }
     std::unique_ptr<Delivery> clone() const override { return std::make_unique<StandardDelivery>(*this); }
 };
@@ -43,7 +43,6 @@ public:
     std::unique_ptr<Delivery> clone() const override { return std::make_unique<PickupDelivery>(*this); }
 };
 
-// Фабрика: превращает число из консоли в объект нужного класса
 inline std::unique_ptr<Delivery> createDelivery(int type) {
     switch (type) {
     case 1: return std::make_unique<StandardDelivery>();

@@ -42,7 +42,6 @@ public:
     OrderStatus getStatus() const { return status; }
     const std::vector<Product>& getItems() const { return items; }
 
-    // проверка допустимости операции (инкапсул€ци€)
     bool canAddItems() const { return status == OrderStatus::Created; }
 
     void addItem(Product p) { items.push_back(p); }

@@ -6,7 +6,7 @@
 UI::UI(ServiceManager& s) : service(s), nextClientId(1) {}
 
 void UI::printMenu() const {
-    std::cout << "\n--------- МЕНЮ СЛУЖБЫ ДОСТАВКИ --------- \n";
+    std::cout << "\n--------- Меню --------- \n";
     std::cout << "1) Создать заказ и добавить позиции\n";
     std::cout << "2) Показать список заказов\n";
     std::cout << "3) Выбрать способ доставки для заказа\n";
