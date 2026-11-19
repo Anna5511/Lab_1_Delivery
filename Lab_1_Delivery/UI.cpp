@@ -40,7 +40,6 @@ int UI::readInt(const std::string& prompt, int minVal, int maxVal) const {
     }
 }
 
-// ÍÀÄÅÆÍÀß ÂÀËÈÄÀÖÈß ÒÅËÅÔÎÍÀ: óñòğàíÿåò áàã ñ "5vndji"
 std::string UI::readPhone(const std::string& prompt) const {
     std::string s;
     while (true) {

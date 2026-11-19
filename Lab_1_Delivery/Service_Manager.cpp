@@ -7,9 +7,7 @@ ServiceManager::ServiceManager() : nextOrderId(1) {}
 void ServiceManager::clear() {
     activeOrders.clear();
     nextOrderId = 1;
-    // Каталог и курьеры можно перезаполнить в main, или оставить как есть, 
-    // но для "чистого" старта лучше сбросить и каталог, если он был динамическим.
-    // В текущей архитектуре main.cpp заполняет его заново при новом цикле.
+    // Сброс каталога
 }
 
 void ServiceManager::addCourier(Courier c) { couriers.push_back(c); }
@@ -46,10 +44,7 @@ bool ServiceManager::addItemToOrder(int orderId, int catalogIndex, int quantity)
                 return false;
             }
 
-            // Уменьшаем количество на полке (без пересоздания объекта!)
             catalogItem.changeQuantity(-quantity);
-
-            // Добавляем в заказ
             activeOrders[i].addItem(Product(catalogItem.getName(), catalogItem.getPrice(), quantity));
 
             std::cout << "Товар \"" << catalogItem.getName() << "\" (" << quantity

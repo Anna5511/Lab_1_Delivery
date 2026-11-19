@@ -16,7 +16,6 @@ public:
     int getQuantity() const { return amount; }
     double getPrice() const { return price; }
 
-    // Исправление бага: меняем количество существующего объекта, а не пересоздаем его
     void changeQuantity(int delta) { amount += delta; }
 
     void print() const {
@@ -31,7 +30,7 @@ class Client {
 private:
     int id;
     std::string name;
-    std::string phone; // Изменено на string для надежной валидации ввода
+    std::string phone;
 
 public:
     Client(int i = 0, std::string n = "Гость", std::string p = "0000000000") : id(i), name(n), phone(p) {}
